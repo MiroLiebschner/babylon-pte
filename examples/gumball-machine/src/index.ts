@@ -4,7 +4,7 @@ import { getAccountAddress, signTransaction } from 'pte-browser-extension-sdk';
 // Global states
 let accountAddress = undefined; // User account address
 let packageAddress = undefined; // GumballMachine package address
-let componentAddress = '026dce6f5ef1747ec5e6a8fa1f7571312ab57f5edc4d0a49dc932b'; // GumballMachine component address
+let componentAddress = '023864c2f9a7105d34ea0a08b20ea230cae874ba566056d39e8317'; // GumballMachine component address
 let resourceAddress = undefined; // GUM resource address
 
 document.getElementById('getTemperature').onclick = async function () {
@@ -58,16 +58,19 @@ document.getElementById('setTemperature').onclick = async function () {
 };
 
 document.getElementById('instantiateComponent').onclick = async function () {
+  console.log('Test1');
   // Construct manifest
   const manifest = new ManifestBuilder()
     .callFunction(
       packageAddress,
-      'GumballMachine',
+      'WeatherOracle',
       'instantiate_gumball_machine',
-      ['Decimal("1.0")'],
+      [],
     )
     .build()
     .toString();
+
+  console.log('Test2');
 
   // Send manifest to extension for signing
   const receipt = await signTransaction(manifest);
@@ -81,4 +84,23 @@ document.getElementById('instantiateComponent').onclick = async function () {
     document.getElementById('componentAddress').innerText =
       'Error: ' + receipt.status;
   }
+};
+
+document.getElementById('publishPackage').onclick = async function () {
+  // Load the wasm
+  const response = await fetch('./gumball_machine.wasm');
+  const wasm = new Uint8Array(await response.arrayBuffer());
+
+  // Construct manifest
+  const manifest = new ManifestBuilder()
+    .publishPackage(wasm)
+    .build()
+    .toString();
+
+  // Send manifest to extension for signing
+  const receipt = await signTransaction(manifest);
+
+  // Update UI
+  packageAddress = receipt.newPackages[0];
+  document.getElementById('packageAddress').innerText = packageAddress;
 };
