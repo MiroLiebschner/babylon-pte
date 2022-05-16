@@ -4,7 +4,7 @@ import { getAccountAddress, signTransaction } from 'pte-browser-extension-sdk';
 // Global states
 let accountAddress = undefined; // User account address
 let packageAddress = undefined; // GumballMachine package address
-let componentAddress = '023864c2f9a7105d34ea0a08b20ea230cae874ba566056d39e8317'; // GumballMachine component address
+let componentAddress = undefined; // GumballMachine component address
 let resourceAddress = undefined; // GUM resource address
 
 document.getElementById('getTemperature').onclick = async function () {
@@ -63,8 +63,8 @@ document.getElementById('instantiateComponent').onclick = async function () {
   const manifest = new ManifestBuilder()
     .callFunction(
       packageAddress,
-      'WeatherOracle',
-      'instantiate_gumball_machine',
+      'WeatherOracleLondon',
+      'instantiate_weather_oracle',
       [],
     )
     .build()

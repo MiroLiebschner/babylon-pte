@@ -1,14 +1,14 @@
 use scrypto::prelude::*;
 
 blueprint! {
-    struct WeatherOracle {
+    struct WeatherOracleLondon {
      
         temperature: Decimal,
     }
 
-    impl WeatherOracle {
+    impl WeatherOracleLondon {
         // given a price in XRD, creates a ready-to-use gumball machine
-        pub fn instantiate_gumball_machine() -> ComponentAddress {
+        pub fn instantiate_weather_oracle() -> ComponentAddress {
          
             // populate a GumballMachine struct and instantiate a new component
             Self {
