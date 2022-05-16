@@ -27,14 +27,24 @@ document.getElementById('getTemperature').onclick = async function () {
 
 document.getElementById('setTemperature').onclick = async function () {
   // Weather Api call to get the temperature
-  const response = await fetch(
+  var temp;
+  const results = await fetch(
     'https://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=da178aaf3436b27ea916258b3faa6d1e',
-  );
-  console.log(response);
+  )
+    .then((response) => response.json())
+    .then((json) => (temp = json.main.temp));
+
+  const d1 = 'Decimal(';
+  const d2 = '"';
+  const d3 = ')';
+
+  const tempAsDecString = d1 + d2 + temp + d2 + d3;
+
+  console.log(tempAsDecString);
 
   // Construct manifest
   const manifest = new ManifestBuilder()
-    .callMethod(componentAddress, 'set_temperature', ['Decimal("22.0")'])
+    .callMethod(componentAddress, 'set_temperature', [tempAsDecString])
     .build()
     .toString();
 
@@ -45,7 +55,7 @@ document.getElementById('setTemperature').onclick = async function () {
 
   // Update UI
   document.getElementById('newTemperature').innerText = JSON.stringify(
-    receipt,
+    temp,
     null,
     2,
   );
