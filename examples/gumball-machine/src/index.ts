@@ -57,32 +57,6 @@ document.getElementById('setTemperature').onclick = async function () {
   );
 };
 
-document.getElementById('fetchAccountAddress').onclick = async function () {
-  // Retrieve extension user account address
-  accountAddress = await getAccountAddress();
-
-  document.getElementById('accountAddress').innerText = accountAddress;
-};
-
-document.getElementById('publishPackage').onclick = async function () {
-  // Load the wasm
-  const response = await fetch('./gumball_machine.wasm');
-  const wasm = new Uint8Array(await response.arrayBuffer());
-
-  // Construct manifest
-  const manifest = new ManifestBuilder()
-    .publishPackage(wasm)
-    .build()
-    .toString();
-
-  // Send manifest to extension for signing
-  const receipt = await signTransaction(manifest);
-
-  // Update UI
-  packageAddress = receipt.newPackages[0];
-  document.getElementById('packageAddress').innerText = packageAddress;
-};
-
 document.getElementById('instantiateComponent').onclick = async function () {
   // Construct manifest
   const manifest = new ManifestBuilder()
@@ -107,53 +81,4 @@ document.getElementById('instantiateComponent').onclick = async function () {
     document.getElementById('componentAddress').innerText =
       'Error: ' + receipt.status;
   }
-};
-
-document.getElementById('buyGumball').onclick = async function () {
-  // Construct manifest
-  const manifest = new ManifestBuilder()
-    .withdrawFromAccountByAmount(
-      accountAddress,
-      1,
-      '030000000000000000000000000000000000000000000000000004',
-    )
-    .takeFromWorktop(
-      '030000000000000000000000000000000000000000000000000004',
-      'xrd',
-    )
-    .callMethod(componentAddress, 'buy_gumball', ['Bucket("xrd")'])
-    .callMethodWithAllResources(accountAddress, 'deposit_batch')
-    .build()
-    .toString();
-
-  // Send manifest to extension for signing
-  const receipt = await signTransaction(manifest);
-
-  // Update UI
-  document.getElementById('receipt').innerText = JSON.stringify(
-    receipt,
-    null,
-    2,
-  );
-};
-
-document.getElementById('checkBalance').onclick = async function () {
-  // Retrieve component info from PTE service
-  const api = new DefaultApi();
-  const userComponent = await api.getComponent({
-    address: accountAddress,
-  });
-  const machineComponent = await api.getComponent({
-    address: componentAddress,
-  });
-
-  // Update UI
-  document.getElementById('userBalance').innerText =
-    userComponent.ownedResources
-      .filter((e) => e.resourceAddress == resourceAddress)
-      .map((e) => e.amount)[0] || '0';
-  document.getElementById('machineBalance').innerText =
-    machineComponent.ownedResources
-      .filter((e) => e.resourceAddress == resourceAddress)
-      .map((e) => e.amount)[0];
 };
