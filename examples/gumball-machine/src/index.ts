@@ -4,7 +4,7 @@ import { getAccountAddress, signTransaction } from 'pte-browser-extension-sdk';
 // Global states
 let accountAddress = undefined; // User account address
 let packageAddress = undefined; // GumballMachine package address
-let componentAddress = undefined; // GumballMachine component address
+let componentAddress = '026dce6f5ef1747ec5e6a8fa1f7571312ab57f5edc4d0a49dc932b'; // GumballMachine component address
 let resourceAddress = undefined; // GUM resource address
 
 document.getElementById('getTemperature').onclick = async function () {
@@ -19,6 +19,32 @@ document.getElementById('getTemperature').onclick = async function () {
 
   // Update UI
   document.getElementById('temperature').innerText = JSON.stringify(
+    receipt,
+    null,
+    2,
+  );
+};
+
+document.getElementById('setTemperature').onclick = async function () {
+  // Weather Api call to get the temperature
+  const response = await fetch(
+    'https://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=da178aaf3436b27ea916258b3faa6d1e',
+  );
+  console.log(response);
+
+  // Construct manifest
+  const manifest = new ManifestBuilder()
+    .callMethod(componentAddress, 'set_temperature', ['Decimal("22.0")'])
+    .build()
+    .toString();
+
+  // Send manifest to extension for signing
+  const receipt = await signTransaction(manifest);
+
+  console.log(receipt);
+
+  // Update UI
+  document.getElementById('newTemperature').innerText = JSON.stringify(
     receipt,
     null,
     2,
