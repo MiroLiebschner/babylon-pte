@@ -40,8 +40,6 @@ document.getElementById('setTemperature').onclick = async function () {
   const d3 = ')';
   const tempAsDecString = d1 + d2 + temp + d2 + d3;
 
-  console.log(tempAsDecString);
-
   // Construct manifest
   const manifest = new ManifestBuilder()
     .callMethod(componentAddress, 'set_temperature', [tempAsDecString])
@@ -50,8 +48,6 @@ document.getElementById('setTemperature').onclick = async function () {
 
   // Send manifest to extension for signing
   const receipt = await signTransaction(manifest);
-
-  console.log(receipt);
 
   // Update UI
   document.getElementById('newTemperature').innerText = JSON.stringify(
